@@ -66,6 +66,14 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
                 return Utility.GenerateStringFromObject(Utility.LocateObjectInVariables(_variableName, variables), _seperator);
 		}
 
+        public object GetObjectValue(Dictionary<string, object> variables)
+        {
+            if (_variableName.StartsWith("!"))
+                return !Utility.IsComponentTrue(Utility.GenerateStringFromObject(Utility.LocateObjectInVariables(_variableName.Substring(1), variables), _seperator));
+            else
+                return Utility.LocateObjectInVariables(_variableName, variables);
+        }
+
         public IComponent NewInstance()
         {
             return new ParameterComponent();
