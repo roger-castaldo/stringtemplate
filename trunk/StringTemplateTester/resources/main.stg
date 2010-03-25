@@ -1,0 +1,50 @@
+group skin;
+GenerateMenu(children) ::= <<
+    $children:{menuEntry | 
+        <li 
+            $if(menuEntry.IconURL)$
+                style="background-image:url('$menuEntry.IconURL$');"
+            $endif$
+            $if(!menuEntry.IconURL)$
+                $if(menuEntry.PageClass)$
+                    style="background-image:url('./Images/application.png');"
+                $endif$
+            $endif$
+            $if(menuEntry.PageClass)$
+				 onClick="LoadMenuLink('$menuEntry.PageClass$','$menuEntry.Size$','$menuEntry.Title$');"
+            $endif$
+            $if(menuEntry.FormClass)$
+				$if(menuEntry.Parameters)$
+					onClick="GenerateForm('$menuEntry.Size$','$menuEntry.FormClass$',$menuEntry.Parameters$);ReleaseStart();"
+				$else$
+					onClick="GenerateForm('$menuEntry.Size$','$menuEntry.FormClass$',null);ReleaseStart();"
+				$endif$
+            $endif$
+        >
+            <span>
+                $menuEntry.Title$
+            </span>
+            $if(menuEntry.Children)$
+                <ul class="Menu" style="left:175px;bottom:5px;z-index:$menuEntry.ChildrenTeir$;">
+					$GenerateMenu(menuEntry.Children)$       
+				</ul>
+            $endif$
+        </li>
+    }$
+>>
+
+GenerateLargeForm(content,id,title,OnClose,OnMinimize,scriptID) ::= <<
+	<div id="$id$" onBlur="UnHighlightTaskBar($scriptID$);" class="Form transparent" style="max-width:800px;max-height:600px;"><div class="tl"><div class="tr"><div class="ControlButtons"><img src="./FormParts/minimize.png" alt="minimize" onclick="$OnMinimize$MinimizeForm($scriptID$);"><img src="./FormParts/cancel.png" alt="close" onclick="$OnClose$CloseForm($scriptID$);"></div></div><div class="top" id="$id$_top"><center>$title$</center></div></div><div class="left"><div class="right"><div style="overflow:auto;max-width:794px;max-height:552px;background-color:White;padding:5px;color:Black;">$content$</div></div></div><div class="bl"><div class="br"></div><div class="bottom"><div class="status"><div id="$id$_status" class="statusContainer"></div></div><div style="clear:right;"></div></div></div></div>
+>>
+
+GenerateMediumForm(content,id,title,OnClose,OnMinimize,scriptID) ::= <<
+	<div id="$id$" onBlur="UnHighlightTaskBar($scriptID$);" class="Form transparent" style="max-width:600px;max-height:400px;"><div class="tl"><div class="tr"><div class="ControlButtons"><img src="./FormParts/minimize.png" alt="minimize" onclick="$OnMinimize$MinimizeForm($scriptID$);"><img src="./FormParts/cancel.png" alt="close" onclick="$OnClose$CloseForm($scriptID$);"></div></div><div class="top" id="$id$_top"><center>$title$</center></div></div><div class="left"><div class="right"><div style="overflow:auto;max-width:594px;max-height:352px;background-color:White;padding:5px;color:Black;">$content$</div></div></div><div class="bl"><div class="br"></div><div class="bottom"><div class="status"><div id="$id$_status" class="statusContainer"></div></div><div style="clear:right;"></div></div></div></div>
+>>
+
+GenerateSmallForm(content,id,title,OnClose,OnMinimize,scriptID) ::= <<
+	<div id="$id$" onBlur="UnHighlightTaskBar($scriptID$);" class="Form transparent" style="max-width:420px;max-height:220px;"><div class="tl"><div class="tr"><div class="ControlButtons"><img src="./FormParts/minimize.png" alt="minimize" onclick="$OnMinimize$MinimizeForm($scriptID$);"><img src="./FormParts/cancel.png" alt="close" onclick="$OnClose$CloseForm($scriptID$);"></div></div><div class="top" id="$id$_top"><center>$title$</center></div></div><div class="left"><div class="right"><div style="overflow:auto;max-width:414px;max-height:172px;background-color:White;padding:5px;color:Black;">$content$</div></div></div><div class="bl"><div class="br"></div><div class="bottom"><div class="status"><div id="$id$_status" class="statusContainer"></div></div><div style="clear:right;"></div></div></div></div>
+>>
+
+CreateJavascriptElem() ::= <<
+	'$it$'
+>>
