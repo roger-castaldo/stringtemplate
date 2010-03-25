@@ -14,6 +14,8 @@ using Org.Reddragonit.Stringtemplate.Interfaces;
 using System.Text.RegularExpressions;
 
 using Org.Reddragonit.Stringtemplate.Tokenizers;
+using System.Collections;
+using System.Reflection;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Base
 {
@@ -22,7 +24,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
 	/// </summary>
 	public class VariableComponent : IComponent 
 	{
-        private static readonly Regex _reg = new Regex("DECLARE\\s+(.+)\\s+as\\s+(.+)\\s+=\\s+(.+)", RegexOptions.Compiled | RegexOptions.ECMAScript);
+        private static readonly Regex _reg = new Regex("^DECLARE\\s+([A-Za-z_][A-Za-z_0-9]*)\\s+[Aa][Ss]\\s+(([A-Za-z][A-Za-z0-9]+\\.?)*[A-Za-z][A-Za-z0-9]+(\\[\\])?)\\s*=\\s*(NEW\\s*)?(([A-Za-z][A-Za-z0-9]+\\.?)*[A-Za-z][A-Za-z0-9]+)?(\\(|\\{)?(.+)(\\)|\\})?$", RegexOptions.Compiled | RegexOptions.ECMAScript);
 
 		public VariableComponent()
 		{
@@ -32,14 +34,15 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
 		//SAMPLE: DECLARE names as String[] = {"bob","fred","jack"}
 		//SAMPLE: DECLARE fred as Org.Sample.Name = NEW Name("bob","loblaw")
 		//SAMPLE: DECLARE fred as Org.Sample.Name = Name.Construct("bob","loblaw")
+        //SAMPLE: DECLARE fred as Org.Sample.Name = Name.Construct($names.bob$,$names.loblaw$)
 		
 		private string _variableName;
 		private Type _variableType;
 		private bool _constructor=false;
-		private bool _directSet = false;
 		private bool _staticCall = false;
 		private bool _isArray=false;
-        private object _val=null;
+        private string _constructorCall = null;
+        private List<IComponent> _components = null;
 
         public bool CanLoad(Org.Reddragonit.Stringtemplate.Tokenizers.Token token)
         {
@@ -49,54 +52,213 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
         public bool Load(Queue<Token> tokens, Type tokenizerType,TemplateGroup group)
         {
             Match m = _reg.Match(tokens.Dequeue().Content);
-            _variableName = m.Groups[0].Value;
-            _isArray = m.Groups[1].Value.Contains("[]");
-            if (_isArray)
-                _variableType = Utility.LocateType(m.Groups[1].Value.Replace("[]", ""));
-            else
-                _variableType = Utility.LocateType(m.Groups[1].Value);
+            _variableName = m.Groups[1].Value;
+            _variableType = Utility.LocateType(m.Groups[2].Value.Replace("[]",""));
+            if (_variableType==null)
+                _variableType=Utility.LocateType("System."+m.Groups[2].Value.Replace("[]", ""));
+            _isArray = m.Groups[4].Value.Contains("[]");
             if (_variableType == null)
                 return false;
-            _constructor = m.Groups[2].Value.ToUpper().StartsWith("NEW");
+            _constructor = m.Groups[5].Value.ToUpper().Trim()=="NEW";
+            //int y = 0;
+            //foreach (Group g in m.Groups)
+            //{
+            //    System.Diagnostics.Debug.WriteLine(y.ToString() + ":" + g.Value);
+            //    y++;
+            //}
+            _constructorCall = m.Groups[6].Value;
             if (!_constructor)
+                _staticCall = m.Groups[6].Value.Length > 0;
+            string variables = m.Groups[9].Value;
+            if (variables.EndsWith(")") || variables.EndsWith("}"))
+                variables = variables.Substring(0, variables.Length - 1);
+            string tmp = "";
+            Tokenizer tok = null;
+            if (_isArray || _constructor || _staticCall)
             {
-                if (_isArray)
-                    _directSet = m.Groups[2].Value.StartsWith("{");
-                _staticCall = m.Groups[2].Value.Contains("(") && ((m.Groups[2].Value.IndexOf("\"") > m.Groups[2].Value.IndexOf("(")) || (!m.Groups[2].Value.Contains("\"") && m.Groups[2].Value.Contains(")")));
-            }
-            if (!_directSet && !_isArray)
-            {
-                _directSet = !_constructor && !_staticCall;
-            }
-            if (!_directSet && !_constructor && !_staticCall)
-                return false;
-            try
-            {
-                if (_directSet)
+                char[] chars = variables.ToCharArray();
+                for (int x = 0; x < chars.Length; x++)
                 {
-                    if (_isArray)
+                    if (chars[x] == ',')
                     {
-                        if (_variableType.Equals(typeof(string)))
-                        {
-
-                        }
+                        tok = (Tokenizer)tokenizerType.GetConstructor(new Type[] { typeof(string) }).Invoke(new object[] { tmp });
+                        if (_components == null)
+                            _components = tok.TokenizeStream(group);
+                        else
+                            _components.AddRange(tok.TokenizeStream(group).ToArray());
+                        tmp = "";
+                    }
+                    else if ((chars[x] == '\'') || (chars[x] == '"'))
+                    {
+                        tmp = processQuote(chars, ref x);
                     }
                     else
-                    {
-                        
-                    }
+                        tmp += chars[x].ToString();
+                }
+                if (tmp.Length > 0)
+                {
+                    tok = (Tokenizer)tokenizerType.GetConstructor(new Type[] { typeof(string) }).Invoke(new object[] { tmp });
+                    if (_components == null)
+                        _components = tok.TokenizeStream(group);
+                    else
+                        _components.AddRange(tok.TokenizeStream(group).ToArray());
                 }
             }
-            catch (Exception e)
+            else
             {
-                return false;
+                if ((variables.StartsWith("\"") || variables.StartsWith("'"))&&(variables.EndsWith("\"") || variables.EndsWith("'")))
+                    variables = variables.Substring(1,variables.Length-2);
+                tok = (Tokenizer)tokenizerType.GetConstructor(new Type[] { typeof(string) }).Invoke(new object[] { variables });
+                _components = tok.TokenizeStream(group);
+            }
+            foreach (IComponent ic in _components)
+            {
+                System.Diagnostics.Debug.WriteLine(ic.ToString());
             }
             return true;
         }
 
+        private string processQuote(char[] chars, ref int x)
+        {
+            string ret = "";
+            x++;
+            switch (chars[x-1]){
+                case '"':
+                    while (true)
+                    {
+                        if (chars[x] == '\\' && (x + 1 < chars.Length) && (chars[x + 1] == '"'))
+                        {
+                            ret += "\"";
+                            x += 2;
+                        }
+                        else if (chars[x] == '"')
+                        {
+                            x++;
+                            break;
+                        }
+                        else
+                        {
+                            ret += chars[x].ToString();
+                            x++;
+                        }
+                    }
+                    break;
+                case '\'':
+                    while (true)
+                    {
+                        if (chars[x] == '\\' && (x + 1 < chars.Length) && (chars[x + 1] == '\''))
+                        {
+                            ret += "'";
+                            x += 2;
+                        }
+                        else if (chars[x] == '\'')
+                        {
+                            x++;
+                            break;
+                        }
+                        else
+                        {
+                            ret += chars[x].ToString();
+                            x++;
+                        }
+                    }
+                    break;
+            }
+            x--;
+            return ret;
+        }
+
         public string GenerateString(ref Dictionary<string, object> variables)
         {
-            throw new NotImplementedException();
+            object obj = null;
+            Type t = null;
+            object[] objs = new object[_components.Count];
+            if (_constructor)
+            {
+                t = Utility.LocateType(_constructorCall);
+                foreach (ConstructorInfo c in t.GetConstructors())
+                {
+                    if (c.GetParameters().Length == _components.Count)
+                    {
+                        try
+                        {
+                            for (var x = 0; x < objs.Length; x++)
+                            {
+                                IComponent ic = _components[x];
+                                if (ic is ParameterComponent)
+                                    objs[x] = Convert.ChangeType(((ParameterComponent)ic).GetObjectValue(variables), c.GetParameters()[x].ParameterType);
+                                else
+                                    objs[x] = Convert.ChangeType(ic.GenerateString(ref variables),c.GetParameters()[x].ParameterType);
+                            }
+                            obj = c.Invoke(objs);
+                            break;
+                        }
+                        catch (Exception e)
+                        {
+                        }
+                    }
+                }
+            }
+            else if (_staticCall)
+            {
+                t = Utility.LocateType(_constructorCall.Substring(0, _constructorCall.LastIndexOf(".")));
+                MethodInfo mi = null;
+                foreach (MethodInfo m in t.GetMethods(BindingFlags.Static|BindingFlags.Public))
+                {
+                    if (m.Name == _constructorCall.Substring(_constructorCall.LastIndexOf(".") + 1))
+                    {
+                        if (m.GetParameters().Length == _components.Count)
+                        {
+                            mi = m;
+                            break;
+                        }
+                    }
+                }
+                if (mi != null)
+                {
+                    for (var x = 0; x < objs.Length; x++)
+                    {
+                        IComponent ic = _components[x];
+                        if (ic is ParameterComponent)
+                            objs[x]=Convert.ChangeType(((ParameterComponent)ic).GetObjectValue(variables), mi.GetParameters()[x].ParameterType);
+                        else
+                            objs[x] = Convert.ChangeType(ic.GenerateString(ref variables), mi.GetParameters()[x].ParameterType);
+                    }
+                    obj = mi.Invoke(null, objs);
+                }
+            }
+            else if (_isArray)
+            {
+                obj = new ArrayList();
+                foreach (IComponent ic in _components)
+                {
+                    if (ic is ParameterComponent)
+                        ((ArrayList)obj).Add(Convert.ChangeType(((ParameterComponent)ic).GetObjectValue(variables), _variableType));
+                    else
+                        ((ArrayList)obj).Add(Convert.ChangeType(ic.GenerateString(ref variables), _variableType));
+                }
+            }
+            else
+            {
+                if (_components.Count == 1)
+                {
+                    if (_components[0] is ParameterComponent)
+                        obj = Convert.ChangeType(((ParameterComponent)_components[0]).GetObjectValue(variables), _variableType);
+                    else
+                        obj = Convert.ChangeType(_components[0].GenerateString(ref variables), _variableType);
+                }
+                else
+                {
+                    string tmp = "";
+                    foreach (IComponent ic in _components)
+                        tmp+=ic.GenerateString(ref variables);
+                    obj = Convert.ChangeType(tmp,_variableType);
+                }
+            }
+            if (variables.ContainsKey(_variableName))
+                variables.Remove(_variableName);
+            variables.Add(_variableName, obj);
+            return "";
         }
 
         #region IComponent Members
