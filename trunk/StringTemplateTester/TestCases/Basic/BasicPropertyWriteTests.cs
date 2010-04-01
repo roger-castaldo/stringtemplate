@@ -138,6 +138,17 @@ namespace StringTemplateTester.TestCases.Basic
                 return false;
             }
 
+            //testing accessing a class object within a dictionary
+            tp = new Template("This is my last name value: $mydictionary.FirstPerson.Name$");
+            Dictionary<string, teir2> mydc = new Dictionary<string, teir2>();
+            mydc.Add("FirstPerson", new teir2("LobLaw"));
+            tp.SetAttribute("mydictionary", mydc);
+            if (tp.ToString() != "This is my last name value: LobLaw")
+            {
+                Console.WriteLine("Complex access to object property from within dictionary failed with results: " + tp.ToString());
+                return false;
+            }
+
             return true;
         }
 

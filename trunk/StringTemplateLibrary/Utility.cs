@@ -291,27 +291,27 @@ namespace Org.Reddragonit.Stringtemplate
             object ret = null;
             if (varName.Contains("."))
             {
-                if (val is IDictionary)
+                if (val.GetType().GetProperty(varName.Substring(0, varName.IndexOf("."))) != null)
+                    ret = RecurLocateValue(val.GetType().GetProperty(varName.Substring(0, varName.IndexOf("."))).GetValue(val, new object[0]), varName.Substring(varName.IndexOf(".") + 1));
+                else if (val.GetType().GetMethod(varName.Substring(0, varName.IndexOf(".")), Type.EmptyTypes) != null)
+                    ret = RecurLocateValue(val.GetType().GetMethod(varName.Substring(0, varName.IndexOf(".")), Type.EmptyTypes).Invoke(val, new object[0]), varName.Substring(varName.IndexOf(".") + 1));
+                else if (val is IDictionary)
                 {
                     if (((IDictionary)val).Contains(varName.Substring(0, varName.IndexOf("."))))
                         ret = RecurLocateValue(((IDictionary)val)[varName.Substring(0, varName.IndexOf("."))], varName.Substring(varName.IndexOf(".")+1));
                 }
-                else if (val.GetType().GetProperty(varName.Substring(0, varName.IndexOf("."))) != null)
-                    ret = RecurLocateValue(val.GetType().GetProperty(varName.Substring(0, varName.IndexOf("."))).GetValue(val, new object[0]), varName.Substring(varName.IndexOf(".")+1));
-                else if (val.GetType().GetMethod(varName.Substring(0, varName.IndexOf(".")), Type.EmptyTypes) != null)
-                    ret = RecurLocateValue(val.GetType().GetMethod(varName.Substring(0, varName.IndexOf(".")), Type.EmptyTypes).Invoke(val, new object[0]), varName.Substring(varName.IndexOf(".")+1));
             }
             else
             {
-                if (val is IDictionary)
+                if (val.GetType().GetProperty(varName) != null)
+                    ret = val.GetType().GetProperty(varName).GetValue(val, new object[0]);
+                else if (val.GetType().GetMethod(varName, Type.EmptyTypes) != null)
+                    ret = val.GetType().GetMethod(varName, Type.EmptyTypes).Invoke(val, new object[0]);
+                else if (val is IDictionary)
                 {
                     if (((IDictionary)val).Contains(varName))
                         ret = ((IDictionary)val)[varName];
                 }
-                else if (val.GetType().GetProperty(varName) != null)
-                    ret = val.GetType().GetProperty(varName).GetValue(val, new object[0]);
-                else if (val.GetType().GetMethod(varName, Type.EmptyTypes) != null)
-                    ret = val.GetType().GetMethod(varName, Type.EmptyTypes).Invoke(val, new object[0]);
             }
             return ret;
         }
