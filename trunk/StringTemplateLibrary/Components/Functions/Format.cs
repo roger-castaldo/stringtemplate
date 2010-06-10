@@ -10,7 +10,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
     public class Format : FunctionComponent
     {
 
-        private static readonly Regex _reg = new Regex("^[F|f][O|o][R|r][M|m][A|a][T|t]\\((variable\\s*=\\s*)?(.+),(formatString\\s*=\\s*)?(.+)\\)$",
+        private static readonly Regex _reg = new Regex("^[F|f][O|o][R|r][M|m][A|a][T|t]\\((variable\\s*=\\s*)?([^,]+),(formatString\\s*=\\s*)?([\"']?.+[\"']?)\\)$",
             RegexOptions.Compiled | RegexOptions.ECMAScript);
 
         private string _variable;
@@ -32,6 +32,10 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             Match m = _reg.Match(t.Content);
             _variable = m.Groups[2].Value;
             _format = m.Groups[4].Value;
+            if (_format.StartsWith("\"") || _format.StartsWith("'"))
+                _format = _format.Substring(1);
+            if (_format.EndsWith("\"") || _format.EndsWith("'"))
+                _format = _format.Substring(0, _format.Length - 1);
             return true;
         }
 
