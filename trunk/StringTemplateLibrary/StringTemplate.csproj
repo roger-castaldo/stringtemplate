@@ -40,7 +40,9 @@
     <Compile Include="Components\Base\VariableComponent.cs" />
     <Compile Include="Components\ComponentExtractor.cs" />
     <Compile Include="Components\FunctionComponent.cs" />
+    <Compile Include="Components\Functions\Even.cs" />
     <Compile Include="Components\Functions\ForEachComponent.cs" />
+    <Compile Include="Components\Functions\Format.cs" />
     <Compile Include="Components\Functions\Odd.cs" />
     <Compile Include="Components\Functions\Replace.cs" />
     <Compile Include="Components\Logic\CompareComponent.cs" />
