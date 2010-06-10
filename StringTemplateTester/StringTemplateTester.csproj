@@ -40,6 +40,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCases\Basic\BasicForEachTests.cs" />
+    <Compile Include="TestCases\Basic\BasicFormatTests.cs" />
     <Compile Include="TestCases\Basic\BasicIfWriteTests.cs" />
     <Compile Include="TestCases\Basic\BasicPropertyWriteTests.cs" />
     <Compile Include="TestCases\Basic\BasicReplaceTest.cs" />
