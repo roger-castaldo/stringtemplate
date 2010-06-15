@@ -38,7 +38,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 			,RegexOptions.Compiled|RegexOptions.ECMAScript
 		);
 		
-		private static readonly Regex regSimpleStyle = new Regex("^\\((.+)\\s*(([E|e][Q|q])|([N|n][E|e])|([G|g][T|t])|([L|l][T|t])|([G|g][E|e])|([L|l][E|e]))\\s*(.+)\\)$",
+		private static readonly Regex regSimpleStyle = new Regex("^\\((.+)\\s+(([E|e][Q|q])|([N|n][E|e])|([G|g][T|t])|([L|l][T|t])|([G|g][E|e])|([L|l][E|e]))\\s+(.+)\\)$",
 		                                                        RegexOptions.Compiled|RegexOptions.ECMAScript);
 		
 		private CompareType _type = CompareType.EQUAL;

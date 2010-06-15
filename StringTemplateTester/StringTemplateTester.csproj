@@ -44,6 +44,7 @@
     <Compile Include="TestCases\Basic\BasicIfWriteTests.cs" />
     <Compile Include="TestCases\Basic\BasicPropertyWriteTests.cs" />
     <Compile Include="TestCases\Basic\BasicReplaceTest.cs" />
+    <Compile Include="TestCases\Basic\BasicTypeNameTests.cs" />
     <Compile Include="TestCases\Basic\BasicVariableDeclaration.cs" />
     <Compile Include="TestCases\Complex\DialPlanComplexTest.cs" />
     <Compile Include="TestCases\Complex\TemplateGroupTest.cs" />
