@@ -106,7 +106,10 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 				toks.Enqueue(new Token(m.Groups[10].Value,TokenType.COMPONENT));
                 _left = ComponentExtractor.ExtractComponent(toks, tokenizerType, group);
 				toks.Clear();
-				toks.Enqueue(new Token(m.Groups[11].Value,TokenType.COMPONENT));
+                if (m.Groups[11].Value.Trim().StartsWith("'") || m.Groups[11].Value.Trim().StartsWith("\""))
+                    toks.Enqueue(new Token(m.Groups[11].Value.Trim().Substring(1, m.Groups[11].Value.Trim().Length - 2), TokenType.TEXT));
+                else
+                    toks.Enqueue(new Token(m.Groups[11].Value.Trim(), TokenType.COMPONENT));
                 _right = ComponentExtractor.ExtractComponent(toks, tokenizerType, group);
 			}
 			return true;
