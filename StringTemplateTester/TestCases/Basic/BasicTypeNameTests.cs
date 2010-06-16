@@ -33,6 +33,15 @@ namespace StringTemplateTester.TestCases.Basic
                 return false;
             }
 
+            tp = new Template("$(TypeName(fred) eq 'StringTemplateTester.TestCases.Basic.BasicTypeNameTests')$");
+            tp.SetAttribute("fred", new BasicTypeNameTests());
+            tp.SetAttribute("basicTypeString", "StringTemplateTester.TestCases.Basic.BasicTypeNameTests");
+            if (tp.ToString() != "True")
+            {
+                Console.WriteLine("Basic type name test using equal failed with result: " + tp.ToString());
+                return false;
+            }
+
             tp = new Template("$if((TypeName(fred) eq basicTypeString))$Yes it is$else$No its not$endif$");
             tp.SetAttribute("fred", new BasicTypeNameTests());
             tp.SetAttribute("basicTypeString", "StringTemplateTester.TestCases.Basic.BasicReplaceTest");

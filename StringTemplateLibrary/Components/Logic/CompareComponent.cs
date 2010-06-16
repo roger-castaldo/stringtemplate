@@ -78,7 +78,10 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
                         _type = CompareType.LESS_THAN_OR_EQUAL_TO;
                         break;
                 }
-				toks.Enqueue(new Token(m.Groups[9].Value.Trim(),TokenType.COMPONENT));
+                if (m.Groups[9].Value.Trim().StartsWith("'")||m.Groups[9].Value.Trim().StartsWith("\""))
+                    toks.Enqueue(new Token(m.Groups[9].Value.Trim().Substring(1,m.Groups[9].Value.Trim().Length-2), TokenType.TEXT));
+                else
+				    toks.Enqueue(new Token(m.Groups[9].Value.Trim(),TokenType.COMPONENT));
 				_right = ComponentExtractor.ExtractComponent(toks,tokenizerType,group);
 			}else{
 				m = regFunctionStyle.Match(t.Content);
@@ -116,7 +119,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 			string r = _right.GenerateString(ref variables);
 			switch (_type){
 				case CompareType.EQUAL:
-					ret = Utility.StringsEqual(_left.GenerateString(ref variables),_right.GenerateString(ref variables)).ToString();
+					ret = Utility.StringsEqual(l,r).ToString();
 					break;
 				case CompareType.GREATER_THAN:
 					ret = ((l!=null)&&((r==null)||(l.CompareTo(r)>0))).ToString();
