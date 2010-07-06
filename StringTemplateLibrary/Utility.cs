@@ -312,6 +312,26 @@ namespace Org.Reddragonit.Stringtemplate
                     if (((IDictionary)val).Contains(varName))
                         ret = ((IDictionary)val)[varName];
                 }
+                else
+                {
+                    bool found = false;
+                    foreach (PropertyInfo pi in val.GetType().GetProperties())
+                    {
+                        if (pi.Name == varName)
+                        {
+                            found = true;
+                            ret = pi.GetValue(val,new object[0]);
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        if (val.GetType().GetField(varName) != null)
+                        {
+                            ret = val.GetType().GetField(varName).GetValue(val);
+                        }
+                    }
+                }
             }
             return ret;
         }
