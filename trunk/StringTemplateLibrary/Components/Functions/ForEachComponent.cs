@@ -32,7 +32,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             }
         }
 
-        private static readonly Regex regAlternateFormat = new Regex("^(.+)\\s*:\\s*\\{\\s*([^|]+)\\s*\\|", RegexOptions.Compiled | RegexOptions.Multiline);
+        private static readonly Regex regAlternateFormat = new Regex("^([^:]+)\\s*:\\s*\\{\\s*([^|]+)\\s*\\|", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.ECMAScript);
         private static readonly Regex regEndFor = new Regex("^([E|e][N|n][D|d][F|f][O|o][R|r])$", RegexOptions.Compiled | RegexOptions.ECMAScript);
         private static readonly Regex regVariableExtractor = new Regex("^([F|f][O|o][R|r][E|e][A|a][C|c][H|h])\\((.+),(.+)\\)$",RegexOptions.Compiled|RegexOptions.ECMAScript);
         private static readonly Regex regVarValueExtracor = new Regex("^([V|v][A|a][R|r])\\s*=\\s*(.+)$");
@@ -65,9 +65,9 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
                 m = regAlternateFormat.Match(t.Content);
                 _variableName = m.Groups[1].Value;
                 _entryName = m.Groups[2].Value;
-                string tmp = t.Content.Substring(m.Value.Length);
-                tmp = tmp.Substring(0,tmp.Length-1);
-                Tokenizer tok = (Tokenizer)tokenizerType.GetConstructor(new Type[] { typeof(string) }).Invoke(new object[] { tmp });
+                string tmp = t.Content.Substring(t.Content.IndexOf("|", m.Groups[2].Index) + 1);
+                tmp = tmp.Substring(0, tmp.Length - 1);
+                Tokenizer tok = (Tokenizer)tokenizerType.GetConstructor(new Type[] { typeof(string) }).Invoke(new object[] { tmp});
                 _children = tok.TokenizeStream(group);
             }
             else
