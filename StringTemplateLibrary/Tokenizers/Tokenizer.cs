@@ -111,7 +111,7 @@ namespace Org.Reddragonit.Stringtemplate.Tokenizers
             	else
                 	Consume();
             }
-            if (_curChar!=EOF)
+            if (_curChar!=EOF || _curChar==exitChar)
                 Consume();
         }
 

@@ -53,6 +53,20 @@ namespace StringTemplateTester.TestCases.Basic
                 return false;
             }
 
+            //testing for in for
+            tp = new Template("$entries:{entry |$entry.Names:{name|$name$\n}$}$");
+            List<Dictionary<string, List<string>>> compVars = new List<Dictionary<string, List<string>>>();
+            Dictionary<string, List<string>> ent = new Dictionary<string, List<string>>();
+            ent.Add("Names", new List<string>(new string[] { "test1", "test2" }));
+            compVars.Add(ent);
+            vars = new Dictionary<string, string>();
+            tp.SetParameter("entries", compVars);
+            if (tp.ToString().Trim() != "test1\ntest2")
+            {
+                Console.WriteLine("Basic foreach For in For failed with results: " + tp.ToString());
+                return false;
+            }
+
             tp = new Template(Program.ReadEmbeddedResource("StringTemplateTester.resources.test.st"));
             arVars = new List<Dictionary<string, string>>();
             Dictionary<string, string> file = new Dictionary<string, string>();
