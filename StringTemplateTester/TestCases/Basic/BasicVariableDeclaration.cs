@@ -42,14 +42,14 @@ namespace StringTemplateTester.TestCases.Basic
 
         bool ITest.InvokeTest()
         {
-            Template t = new Template("$DECLARE name as String = \"bob\"$$name$");
+            Template t = new Template("$DECLARE(name as String = \"bob\")$$name$");
             if (t.ToString() != "bob")
             {
                 Console.WriteLine("Testing basic variable failed with results: " + t.ToString());
                 return false;
             }
 
-            t = new Template("$DECLARE names as String[] = {\"bob\",\"fred\",$jack$}$$names:{name|$name$,}$");
+            t = new Template("$DECLARE(names as String[] = {\"bob\",\"fred\",$jack$})$$names:{name|$name$,}$");
             t.SetAttribute("jack","jack");
             if (t.ToString() != "bob,fred,jack,")
             {
@@ -57,7 +57,7 @@ namespace StringTemplateTester.TestCases.Basic
                 return false;
             }
 
-            t = new Template("$DECLARE myname as StringTemplateTester.TestCases.Basic.Name = StringTemplateTester.TestCases.Basic.Name.ConstructNew($bob$,$jack$)$$myname.FirstName$,$myname.LastName$");
+            t = new Template("$DECLARE(myname as StringTemplateTester.TestCases.Basic.Name = StringTemplateTester.TestCases.Basic.Name.ConstructNew($bob$,$jack$))$$myname.FirstName$,$myname.LastName$");
             t.SetAttribute("jack", "jack");
             t.SetAttribute("bob", "bob");
             if (t.ToString() != "bob,jack")
@@ -66,7 +66,7 @@ namespace StringTemplateTester.TestCases.Basic
                 return false;
             }
 
-            t = new Template("$DECLARE myname as StringTemplateTester.TestCases.Basic.Name = NEW StringTemplateTester.TestCases.Basic.Name($bob$,$jack$)$$myname.FirstName$,$myname.LastName$");
+            t = new Template("$DECLARE(myname as StringTemplateTester.TestCases.Basic.Name = NEW StringTemplateTester.TestCases.Basic.Name($bob$,$jack$))$$myname.FirstName$,$myname.LastName$");
             t.SetAttribute("jack", "jack");
             t.SetAttribute("bob", "bob");
             if (t.ToString() != "bob,jack")

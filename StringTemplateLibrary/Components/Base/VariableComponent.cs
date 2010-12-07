@@ -24,17 +24,17 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
 	/// </summary>
 	public class VariableComponent : IComponent 
 	{
-        private static readonly Regex _reg = new Regex("^DECLARE\\s+([A-Za-z_][A-Za-z_0-9]*)\\s+[Aa][Ss]\\s+(([A-Za-z][A-Za-z0-9]+\\.?)*[A-Za-z][A-Za-z0-9]+(\\[\\])?)\\s*=\\s*(NEW\\s*)?(([A-Za-z][A-Za-z0-9]+\\.?)*[A-Za-z][A-Za-z0-9]+)?(\\(|\\{)?(.+)(\\)|\\})?$", RegexOptions.Compiled | RegexOptions.ECMAScript);
+        private static readonly Regex _reg = new Regex("^DECLARE\\s*\\(([^\\s]+)\\s+[A|a][S|s]\\s*([^\\s=]+)\\s*=\\s*([N|n][E|e][W|w]\\s*)?(([A-Za-z0-9_]+\\.)*([A-Za-z0-9_]+))?[\\(\\{\\[]?\\s*(.+)[\\)\\}\\]]?\\s*\\)$", RegexOptions.Compiled | RegexOptions.ECMAScript);
 
 		public VariableComponent()
 		{
 		}
 		
-		//SAMPLE: DELCARE x as Integer = 0;
-		//SAMPLE: DECLARE names as String[] = {"bob","fred","jack"}
-		//SAMPLE: DECLARE fred as Org.Sample.Name = NEW Name("bob","loblaw")
-		//SAMPLE: DECLARE fred as Org.Sample.Name = Name.Construct("bob","loblaw")
-        //SAMPLE: DECLARE fred as Org.Sample.Name = Name.Construct($names.bob$,$names.loblaw$)
+		//SAMPLE: DELCARE(x as Integer = 0)
+		//SAMPLE: DECLARE(names as String[] = {"bob","fred","jack"})
+		//SAMPLE: DECLARE(fred as Org.Sample.Name = NEW Name("bob","loblaw"))
+		//SAMPLE: DECLARE(fred as Org.Sample.Name = Name.Construct("bob","loblaw"))
+        //SAMPLE: DECLARE(fred as Org.Sample.Name = Name.Construct($names.bob$,$names.loblaw$))
 		
 		private string _variableName;
 		private Type _variableType;
@@ -56,20 +56,20 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
             _variableType = Utility.LocateType(m.Groups[2].Value.Replace("[]",""));
             if (_variableType==null)
                 _variableType=Utility.LocateType("System."+m.Groups[2].Value.Replace("[]", ""));
-            _isArray = m.Groups[4].Value.Contains("[]");
+            _isArray = m.Groups[2].Value.Contains("[]");
             if (_variableType == null)
                 return false;
-            _constructor = m.Groups[5].Value.ToUpper().Trim()=="NEW";
-            //int y = 0;
-            //foreach (Group g in m.Groups)
-            //{
-            //    System.Diagnostics.Debug.WriteLine(y.ToString() + ":" + g.Value);
-            //    y++;
-            //}
-            _constructorCall = m.Groups[6].Value;
+            _constructor = m.Groups[3].Value.ToUpper().Trim()=="NEW";
+            int y = 0;
+            foreach (Group g in m.Groups)
+            {
+                System.Diagnostics.Debug.WriteLine(y.ToString() + ":" + g.Value);
+                y++;
+            }
+            _constructorCall = m.Groups[4].Value;
             if (!_constructor)
                 _staticCall = m.Groups[6].Value.Length > 0;
-            string variables = m.Groups[9].Value;
+            string variables = m.Groups[7].Value;
             if (variables.EndsWith(")") || variables.EndsWith("}"))
                 variables = variables.Substring(0, variables.Length - 1);
             string tmp = "";
