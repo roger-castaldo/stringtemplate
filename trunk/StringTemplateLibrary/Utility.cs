@@ -123,6 +123,15 @@ namespace Org.Reddragonit.Stringtemplate
 			}
 			return str1.Equals(str2);
 		}
+
+        public static bool StringContainsString(string container, string search)
+        {
+            if (container == null)
+                return false;
+            else if (search == null)
+                return false;
+            return container.Contains(search);
+        }
 		
         //called to compare to strings while checking for nulls and ignoring all whitespaces as well
         //as case.  This is typically used to compare stored procedures.

@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
+using Org.Reddragonit.Stringtemplate.Components.Base;
+using System.Collections;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Logic
 {
@@ -26,19 +28,22 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 			GREATER_THAN,
 			LESS_THAN,
 			GREATER_THAN_OR_EQUAL_TO,
-			LESS_THAN_OR_EQUAL_TO
+			LESS_THAN_OR_EQUAL_TO,
+            SIMILAR_TO,
+            NOT_SIMILAR_TO
 		}
 		
 		private static readonly Regex regFunctionStyle = new Regex("^("+
 			"(([N|n][O|o][T|t])?[E|e][Q|q][U|u][A|a][L|l])|"+
 			"((([G|g][R|r][E|e][A|a][T|t][E|e][R|r])|"+
 			"([L|l][E|e][S|s][S|s]))([T|t][H|h][A|a][N|n])"+
-			"([O|o][R|r][E|e][Q|q][U|u][A|a][L|l][T|t][O|o])?))"+
+			"([O|o][R|r][E|e][Q|q][U|u][A|a][L|l][T|t][O|o])?)|"+
+            "(([N|n][O|o][T|t])?([S|s][I|i][M|m][I|i][L|l][A|a][R|r][T|t][O|o]))|" +
 			"\\((.+),(.+)\\)$"
 			,RegexOptions.Compiled|RegexOptions.ECMAScript
 		);
 		
-		private static readonly Regex regSimpleStyle = new Regex("^\\((.+)\\s+(([E|e][Q|q])|([N|n][E|e])|([G|g][T|t])|([L|l][T|t])|([G|g][E|e])|([L|l][E|e]))\\s+(.+)\\)$",
+		private static readonly Regex regSimpleStyle = new Regex("^\\((.+)\\s+(([E|e][Q|q])|([N|n][E|e])|([G|g][T|t])|([L|l][T|t])|([G|g][E|e])|([L|l][E|e])|([S|s][T|t])|([N|n][S|s])\\s+(.+)\\)$",
 		                                                        RegexOptions.Compiled|RegexOptions.ECMAScript);
 		
 		private CompareType _type = CompareType.EQUAL;
@@ -77,6 +82,12 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
                     case "LE":
                         _type = CompareType.LESS_THAN_OR_EQUAL_TO;
                         break;
+                    case "ST":
+                        _type = CompareType.SIMILAR_TO;
+                        break;
+                    case "NS":
+                        _type = CompareType.NOT_SIMILAR_TO;
+                        break;
                 }
                 if (m.Groups[9].Value.Trim().StartsWith("'")||m.Groups[9].Value.Trim().StartsWith("\""))
                     toks.Enqueue(new Token(m.Groups[9].Value.Trim().Substring(1,m.Groups[9].Value.Trim().Length-2), TokenType.TEXT));
@@ -101,6 +112,12 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
                         break;
                     case "LESSTHANOREQUALTO":
                         _type = CompareType.LESS_THAN_OR_EQUAL_TO;
+                        break;
+                    case "SIMILARTO":
+                        _type = CompareType.SIMILAR_TO;
+                        break;
+                    case "NOTSIMILARTO":
+                        _type = CompareType.NOT_SIMILAR_TO;
                         break;
                 }
 				toks.Enqueue(new Token(m.Groups[10].Value,TokenType.COMPONENT));
@@ -139,6 +156,12 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 				case CompareType.NOT_EQUAL:
 					ret = (!Utility.StringsEqual(_left.GenerateString(ref variables),_right.GenerateString(ref variables))).ToString();
 					break;
+                case CompareType.SIMILAR_TO:
+                    ret = Utility.StringContainsString(l, r).ToString();
+                    break;
+                case CompareType.NOT_SIMILAR_TO:
+                    ret = (!Utility.StringContainsString(l, r)).ToString();
+                    break;
 			}
 			return ret;
 		}
