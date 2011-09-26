@@ -18,7 +18,7 @@ namespace Org.Reddragonit.Stringtemplate
 	/// This class is a main utility class used to house functionality called upong by other
     /// sections of code.
 	/// </summary>
-	public class Utility
+	internal class Utility
 	{
 		
         //Called to locate a system type by running through all assemblies within the current
