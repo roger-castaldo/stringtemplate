@@ -38,12 +38,12 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 			"((([G|g][R|r][E|e][A|a][T|t][E|e][R|r])|"+
 			"([L|l][E|e][S|s][S|s]))([T|t][H|h][A|a][N|n])"+
 			"([O|o][R|r][E|e][Q|q][U|u][A|a][L|l][T|t][O|o])?)|"+
-            "(([N|n][O|o][T|t])?([S|s][I|i][M|m][I|i][L|l][A|a][R|r][T|t][O|o]))|" +
+            "(([N|n][O|o][T|t])?[S|s][I|i][M|m][I|i][L|l][A|a][R|r][T|t][O|o]))" +
 			"\\((.+),(.+)\\)$"
 			,RegexOptions.Compiled|RegexOptions.ECMAScript
 		);
 		
-		private static readonly Regex regSimpleStyle = new Regex("^\\((.+)\\s+(([E|e][Q|q])|([N|n][E|e])|([G|g][T|t])|([L|l][T|t])|([G|g][E|e])|([L|l][E|e])|([S|s][T|t])|([N|n][S|s])\\s+(.+)\\)$",
+		private static readonly Regex regSimpleStyle = new Regex("^\\((.+)\\s+(([E|e][Q|q])|([N|n][E|e])|([G|g][T|t])|([L|l][T|t])|([G|g][E|e])|([L|l][E|e])|([S|s][T|t])|([N|n][S|s]))\\s+(.+)\\)$",
 		                                                        RegexOptions.Compiled|RegexOptions.ECMAScript);
 		
 		private CompareType _type = CompareType.EQUAL;
@@ -89,10 +89,10 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
                         _type = CompareType.NOT_SIMILAR_TO;
                         break;
                 }
-                if (m.Groups[9].Value.Trim().StartsWith("'")||m.Groups[9].Value.Trim().StartsWith("\""))
-                    toks.Enqueue(new Token(m.Groups[9].Value.Trim().Substring(1,m.Groups[9].Value.Trim().Length-2), TokenType.TEXT));
+                if (m.Groups[11].Value.Trim().StartsWith("'")||m.Groups[11].Value.Trim().StartsWith("\""))
+                    toks.Enqueue(new Token(m.Groups[11].Value.Trim().Substring(1,m.Groups[11].Value.Trim().Length-2), TokenType.TEXT));
                 else
-				    toks.Enqueue(new Token(m.Groups[9].Value.Trim(),TokenType.COMPONENT));
+				    toks.Enqueue(new Token(m.Groups[11].Value.Trim(),TokenType.COMPONENT));
 				_right = ComponentExtractor.ExtractComponent(toks,tokenizerType,group);
 			}else{
 				m = regFunctionStyle.Match(t.Content);
@@ -120,13 +120,13 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
                         _type = CompareType.NOT_SIMILAR_TO;
                         break;
                 }
-				toks.Enqueue(new Token(m.Groups[10].Value,TokenType.COMPONENT));
+				toks.Enqueue(new Token(m.Groups[12].Value,TokenType.COMPONENT));
                 _left = ComponentExtractor.ExtractComponent(toks, tokenizerType, group);
 				toks.Clear();
-                if (m.Groups[11].Value.Trim().StartsWith("'") || m.Groups[11].Value.Trim().StartsWith("\""))
-                    toks.Enqueue(new Token(m.Groups[11].Value.Trim().Substring(1, m.Groups[11].Value.Trim().Length - 2), TokenType.TEXT));
+                if (m.Groups[13].Value.Trim().StartsWith("'") || m.Groups[13].Value.Trim().StartsWith("\""))
+                    toks.Enqueue(new Token(m.Groups[12].Value.Trim().Substring(1, m.Groups[13].Value.Trim().Length - 2), TokenType.TEXT));
                 else
-                    toks.Enqueue(new Token(m.Groups[11].Value.Trim(), TokenType.COMPONENT));
+                    toks.Enqueue(new Token(m.Groups[13].Value.Trim(), TokenType.COMPONENT));
                 _right = ComponentExtractor.ExtractComponent(toks, tokenizerType, group);
 			}
 			return true;
