@@ -14,6 +14,27 @@ namespace StringTemplateTester
     {
         internal static TemplateGroup TestGroup;
 
+        public static List<Type> LocateTypeInstances(Type parent, Assembly ass)
+        {
+            List<Type> ret = new List<Type>();
+            try
+            {
+                foreach (Type t in ass.GetTypes())
+                {
+                    if (t.IsSubclassOf(parent) || (parent.IsInterface && new List<Type>(t.GetInterfaces()).Contains(parent)))
+                        ret.Add(t);
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message != "The invoked member is not supported in a dynamic assembly.")
+                {
+                    throw e;
+                }
+            }
+            return ret;
+        }
+
         static void Main(string[] args)
         {
             string groupContent = ReadEmbeddedResource("StringTemplateTester.resources.main.stg");
@@ -23,7 +44,7 @@ namespace StringTemplateTester
             int cntPass = 0;
             int cntFail = 0;
             Console.WriteLine("Loading All test cases...");
-            foreach (Type t in Utility.LocateTypeInstances(typeof(ITest),typeof(Program).Assembly))
+            foreach (Type t in LocateTypeInstances(typeof(ITest),typeof(Program).Assembly))
                 cases.Add((ITest)t.GetConstructor(Type.EmptyTypes).Invoke(new object[0]));
             Console.WriteLine("Loading test cases complete...Executing now");
             foreach (ITest test in cases)
@@ -50,7 +71,7 @@ namespace StringTemplateTester
 
         public static Stream LocateEmbededResource(string name)
         {
-            Stream ret = typeof(Utility).Assembly.GetManifestResourceStream(name);
+            Stream ret = typeof(Template).Assembly.GetManifestResourceStream(name);
             if (ret == null)
             {
                 foreach (Assembly ass in AppDomain.CurrentDomain.GetAssemblies())

@@ -9,6 +9,7 @@
 
 using System;
 using Org.Reddragonit.Stringtemplate;
+using System.Text.RegularExpressions;
 
 
 namespace StringTemplateTester.TestCases.Complex
@@ -90,7 +91,23 @@ namespace StringTemplateTester.TestCases.Complex
 				return "Dial Plan Complex Test";
 			}
 		}
-		
+
+        public static bool StringsEqualIgnoreWhitespace(string str1, string str2)
+        {
+            if (str1 == null)
+            {
+                if (str2 != null)
+                    return false;
+                return true;
+            }
+            else if (str2 == null)
+            {
+                return false;
+            }
+            Regex r = new Regex("\\s+");
+            return r.Replace(str1, "").Equals(r.Replace(str2, ""));
+        }
+
 		public bool InvokeTest()
 		{
 			Template tp = new Template(TemplateCode);
@@ -99,7 +116,7 @@ namespace StringTemplateTester.TestCases.Complex
 			tp.SetParameter("extensions",new string[]{"1001","1002"});
 			tp.SetParameter("intercom_only",true);
 
-            if (!Utility.StringsEqualIgnoreWhitespace(tp.ToString(), TemplateResult))
+            if (!StringsEqualIgnoreWhitespace(tp.ToString(), TemplateResult))
             {
                 Console.WriteLine("Complex dialplan check failed with result: " + tp.ToString());
                 return false;
