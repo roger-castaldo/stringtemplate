@@ -253,7 +253,7 @@ namespace Org.Reddragonit.Stringtemplate
                     if (seperator!=null)
                     	ret+=seperator;
             	}
-            	if (seperator!=null)
+            	if (seperator!=null && ret.Length>0)
             		ret = ret.Substring(0,ret.Length-seperator.Length);
             }
             else if (obj.GetType().IsArray || (obj is IEnumerable))
@@ -263,7 +263,7 @@ namespace Org.Reddragonit.Stringtemplate
                     if (seperator!=null)
                     	ret+=seperator;
             	}
-            	if (seperator!=null)
+                if (seperator != null && ret.Length > 0)
             		ret = ret.Substring(0,ret.Length-seperator.Length);
             }
             else
