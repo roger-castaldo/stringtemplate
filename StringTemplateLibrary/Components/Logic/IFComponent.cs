@@ -53,27 +53,36 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
             List<IComponent> curChildren = new List<IComponent>();
             while ((tokens.Count>0)&&!regEndIf.IsMatch(tokens.Peek().Content))
             {
-                curToken = tokens.Peek();
-                if (regElseIf.IsMatch(curToken.Content))
+                if (regIf.IsMatch(tokens.Peek().Content))
                 {
-                    _statements.Add(new IfStatement(curCondition, curChildren));
-                    curChildren = new List<IComponent>();
-                    curToken = tokens.Dequeue();
-                    tmp.Clear();
-                    tmp.Enqueue(new Token(regElseIf.Match(curToken.Content).Groups[2].Value, TokenType.COMPONENT));
-                    curCondition = ComponentExtractor.ExtractComponent(tmp, tokenizerType, group);
-                }
-                else if (regElse.IsMatch(curToken.Content))
-                {
-                    _statements.Add(new IfStatement(curCondition, curChildren));
-                    curChildren = new List<IComponent>();
-                    curToken = tokens.Dequeue();
-                    tmp.Clear();
-                    tmp.Enqueue(new Token("true", TokenType.TEXT));
-                    curCondition = ComponentExtractor.ExtractComponent(tmp, tokenizerType, group);
+                    IFComponent ifc = new IFComponent();
+                    ifc.Load(tokens, tokenizerType, group);
+                    curChildren.Add(ifc);
                 }
                 else
-                    curChildren.Add(ComponentExtractor.ExtractComponent(tokens, tokenizerType, group));
+                {
+                    curToken = tokens.Peek();
+                    if (regElseIf.IsMatch(curToken.Content))
+                    {
+                        _statements.Add(new IfStatement(curCondition, curChildren));
+                        curChildren = new List<IComponent>();
+                        curToken = tokens.Dequeue();
+                        tmp.Clear();
+                        tmp.Enqueue(new Token(regElseIf.Match(curToken.Content).Groups[2].Value, TokenType.COMPONENT));
+                        curCondition = ComponentExtractor.ExtractComponent(tmp, tokenizerType, group);
+                    }
+                    else if (regElse.IsMatch(curToken.Content))
+                    {
+                        _statements.Add(new IfStatement(curCondition, curChildren));
+                        curChildren = new List<IComponent>();
+                        curToken = tokens.Dequeue();
+                        tmp.Clear();
+                        tmp.Enqueue(new Token("true", TokenType.TEXT));
+                        curCondition = ComponentExtractor.ExtractComponent(tmp, tokenizerType, group);
+                    }
+                    else
+                        curChildren.Add(ComponentExtractor.ExtractComponent(tokens, tokenizerType, group));
+                }
             }
             _statements.Add(new IfStatement(curCondition, curChildren));
             if (tokens.Count != 0)
