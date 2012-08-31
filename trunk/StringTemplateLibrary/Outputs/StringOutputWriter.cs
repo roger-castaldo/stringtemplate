@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Org.Reddragonit.Stringtemplate.Outputs
 {
-    internal class StringOutputWriter : IOutputWriter
+    public class StringOutputWriter : IOutputWriter
     {
         private string _buffer;
         public StringOutputWriter()
