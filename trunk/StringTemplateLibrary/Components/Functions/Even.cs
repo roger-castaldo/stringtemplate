@@ -5,6 +5,7 @@ using Org.Reddragonit.Stringtemplate.Components.Base;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
 using System.Text.RegularExpressions;
 using Org.Reddragonit.Stringtemplate.Interfaces;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Functions
 {
@@ -33,40 +34,43 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             return true;
         }
 
-        public override string GenerateString(ref Dictionary<string, object> variables)
+        public override void Append(ref Dictionary<string, object> variables, Org.Reddragonit.Stringtemplate.Outputs.IOutputWriter writer)
         {
+            StringOutputWriter swo = new StringOutputWriter();
             try
             {
-
-                Decimal d = Decimal.Parse(_val.GenerateString(ref variables));
+                _val.Append(ref variables, swo);
+                Decimal d = Decimal.Parse(swo.ToString());
                 if (d % 2 == 1)
-                    return false.ToString();
+                    writer.Append(false.ToString());
             }
             catch (Exception e)
             {
                 if (_val is GenericComponent)
                 {
-                    string str = Utility.GenerateStringFromObject(Utility.LocateObjectInVariables(_val.GenerateString(ref variables), variables));
+                    swo.Clear();
+                    _val.Append(ref variables, swo);
+                    string str = Utility.GenerateStringFromObject(Utility.LocateObjectInVariables(swo.ToString(), variables));
                     if (str != null)
                     {
                         try
                         {
                             decimal d = Decimal.Parse(str);
                             if (d % 2 == 1)
-                                return false.ToString();
+                                writer.Append(false.ToString());
                         }
                         catch (Exception ex)
                         {
-                            return false.ToString();
+                            writer.Append(false.ToString());
                         }
                     }
                     else
-                        return false.ToString();
+                        writer.Append(false.ToString());
                 }
                 else
-                    return false.ToString();
+                    writer.Append(false.ToString());
             }
-            return true.ToString();
+            writer.Append(true.ToString());
         }
 
         public override IComponent NewInstance()

@@ -13,6 +13,7 @@ using Org.Reddragonit.Stringtemplate.Interfaces;
 using System.Reflection;
 
 using Org.Reddragonit.Stringtemplate.Tokenizers;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Base
 {
@@ -54,16 +55,16 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
 			}
 			return true;
 		}
-		
-		public string GenerateString(ref Dictionary<string, object> variables)
+
+        public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
 		{
             if (_variableName.StartsWith("!"))
             {
                 bool ret = !Utility.IsComponentTrue(Utility.GenerateStringFromObject(Utility.LocateObjectInVariables(_variableName.Substring(1), variables), _seperator));
-                return ret.ToString();
+                writer.Append(ret.ToString());   
             }
             else
-                return Utility.GenerateStringFromObject(Utility.LocateObjectInVariables(_variableName, variables), _seperator);
+                writer.Append(Utility.GenerateStringFromObject(Utility.LocateObjectInVariables(_variableName, variables), _seperator));
 		}
 
         public object GetObjectValue(Dictionary<string, object> variables)

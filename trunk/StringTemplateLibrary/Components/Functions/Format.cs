@@ -39,12 +39,11 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             return true;
         }
 
-        public override string GenerateString(ref Dictionary<string, object> variables)
+        public override void  Append(ref Dictionary<string,object> variables, Org.Reddragonit.Stringtemplate.Outputs.IOutputWriter writer)
         {
             object obj = Utility.LocateObjectInVariables(_variable, variables);
-            if (obj == null)
-                return null;
-            return ((IFormattable)Utility.LocateObjectInVariables(_variable, variables)).ToString(_format, null);
+            if (obj != null)
+                writer.Append(((IFormattable)Utility.LocateObjectInVariables(_variable, variables)).ToString(_format, null));
         }
 
         public override Org.Reddragonit.Stringtemplate.Interfaces.IComponent NewInstance()

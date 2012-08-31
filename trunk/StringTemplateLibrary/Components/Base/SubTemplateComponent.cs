@@ -4,6 +4,7 @@ using System.Text;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
 using System.Text.RegularExpressions;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 
 namespace Org.Reddragonit.Stringtemplate.Components.Base
@@ -85,7 +86,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
             return true;
         }
 
-        public string GenerateString(ref Dictionary<string, object> variables)
+        public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
         {
             if (_components == null)
             {
@@ -101,7 +102,9 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
             Dictionary<string, object> vars = new Dictionary<string, object>();
             if (_it != null)
             {
-                vars.Add("it", _it.GenerateString(ref variables));
+                StringOutputWriter swo = new StringOutputWriter();
+                _it.Append(ref variables, swo);
+                vars.Add("it", swo.ToString());
             }
             else
             {
@@ -115,9 +118,8 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
             string ret = "";
             foreach (IComponent comp in _components)
             {
-                ret += comp.GenerateString(ref vars);
+                comp.Append(ref vars, writer);
             }
-            return ret;
         }
 
         public IComponent NewInstance() {

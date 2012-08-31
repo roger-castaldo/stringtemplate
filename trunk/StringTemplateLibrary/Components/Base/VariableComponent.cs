@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
 using System.Collections;
 using System.Reflection;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Base
 {
@@ -168,8 +169,9 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
             return ret;
         }
 
-        public string GenerateString(ref Dictionary<string, object> variables)
+        public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
         {
+            StringOutputWriter swo = new StringOutputWriter();
             object obj = null;
             Type t = null;
             object[] objs = new object[_components.Count];
@@ -188,7 +190,11 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
                                 if (ic is ParameterComponent)
                                     objs[x] = Convert.ChangeType(((ParameterComponent)ic).GetObjectValue(variables), c.GetParameters()[x].ParameterType);
                                 else
-                                    objs[x] = Convert.ChangeType(ic.GenerateString(ref variables),c.GetParameters()[x].ParameterType);
+                                {
+                                    swo.Clear();
+                                    ic.Append(ref variables, swo);
+                                    objs[x] = Convert.ChangeType(swo.ToString(), c.GetParameters()[x].ParameterType);
+                                }
                             }
                             obj = c.Invoke(objs);
                             break;
@@ -220,9 +226,13 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
                     {
                         IComponent ic = _components[x];
                         if (ic is ParameterComponent)
-                            objs[x]=Convert.ChangeType(((ParameterComponent)ic).GetObjectValue(variables), mi.GetParameters()[x].ParameterType);
+                            objs[x] = Convert.ChangeType(((ParameterComponent)ic).GetObjectValue(variables), mi.GetParameters()[x].ParameterType);
                         else
-                            objs[x] = Convert.ChangeType(ic.GenerateString(ref variables), mi.GetParameters()[x].ParameterType);
+                        {
+                            swo.Clear();
+                            ic.Append(ref variables, swo);
+                            objs[x] = Convert.ChangeType(swo.ToString(), mi.GetParameters()[x].ParameterType);
+                        }
                     }
                     obj = mi.Invoke(null, objs);
                 }
@@ -235,7 +245,11 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
                     if (ic is ParameterComponent)
                         ((ArrayList)obj).Add(Convert.ChangeType(((ParameterComponent)ic).GetObjectValue(variables), _variableType));
                     else
-                        ((ArrayList)obj).Add(Convert.ChangeType(ic.GenerateString(ref variables), _variableType));
+                    {
+                        swo.Clear();
+                        ic.Append(ref variables, swo);
+                        ((ArrayList)obj).Add(Convert.ChangeType(swo.ToString(), _variableType));
+                    }
                 }
             }
             else
@@ -245,20 +259,23 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
                     if (_components[0] is ParameterComponent)
                         obj = Convert.ChangeType(((ParameterComponent)_components[0]).GetObjectValue(variables), _variableType);
                     else
-                        obj = Convert.ChangeType(_components[0].GenerateString(ref variables), _variableType);
+                    {
+                        swo.Clear();
+                        _components[0].Append(ref variables, swo);
+                        obj = Convert.ChangeType(swo.ToString(), _variableType);
+                    }
                 }
                 else
                 {
-                    string tmp = "";
+                    swo.Clear();
                     foreach (IComponent ic in _components)
-                        tmp+=ic.GenerateString(ref variables);
-                    obj = Convert.ChangeType(tmp,_variableType);
+                        ic.Append(ref variables, swo);
+                    obj = Convert.ChangeType(swo.ToString(),_variableType);
                 }
             }
             if (variables.ContainsKey(_variableName))
                 variables.Remove(_variableName);
             variables.Add(_variableName, obj);
-            return "";
         }
 
         #region IComponent Members

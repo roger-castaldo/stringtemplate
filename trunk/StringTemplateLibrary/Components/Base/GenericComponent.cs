@@ -12,6 +12,7 @@ using System.IO;
 using System.Collections.Generic;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Base
 {
@@ -37,9 +38,9 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
             return true;
         }
 
-        public string GenerateString(ref Dictionary<string, object> variables)
+        public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
         {
-            return _data;
+            writer.Append(_data);
         }
 
         public IComponent NewInstance() {

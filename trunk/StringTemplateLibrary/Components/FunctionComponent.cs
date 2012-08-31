@@ -4,6 +4,7 @@ using System.Text;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 using System.Text.RegularExpressions;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components
 {
@@ -72,7 +73,7 @@ namespace Org.Reddragonit.Stringtemplate.Components
         }
 
         public abstract bool Load(Queue<Token> tokens, Type tokenizerType,TemplateGroup group);
-        public abstract string GenerateString(ref Dictionary<string, object> variables);
+        public abstract void Append(ref Dictionary<string, object> variables, IOutputWriter writer);
         public abstract IComponent NewInstance();
 
         #endregion

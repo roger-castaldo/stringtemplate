@@ -13,6 +13,7 @@ using System.Text;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 using System.IO;
 using System.Collections;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate
 {
@@ -124,14 +125,28 @@ namespace Org.Reddragonit.Stringtemplate
 		public override string ToString(){
             if (_tokenized == null)
                 _tokenized = _tokenizer.TokenizeStream(_templateGroup);
-            StringBuilder sb = new StringBuilder();
+            StringOutputWriter writer = new StringOutputWriter();
             foreach (IComponent comp in _tokenized)
-            {
-                string tmp = comp.GenerateString(ref _parameters);
-                if (tmp != null)
-                    sb.Append(tmp);
-            }
-            return sb.ToString();
+                comp.Append(ref _parameters,writer);
+            return writer.ToString();
 		}
+
+        public void WriteToStream(Stream ostream)
+        {
+            if (_tokenized == null)
+                _tokenized = _tokenizer.TokenizeStream(_templateGroup);
+            StreamOutputWriter writer = new StreamOutputWriter(ostream);
+            foreach (IComponent comp in _tokenized)
+                comp.Append(ref _parameters, writer);
+            writer.Flush();
+        }
+
+        public void WriteToOutputWriter(IOutputWriter writer)
+        {
+            if (_tokenized == null)
+                _tokenized = _tokenizer.TokenizeStream(_templateGroup);
+            foreach (IComponent comp in _tokenized)
+                comp.Append(ref _parameters, writer);
+        }
 	}
 }
