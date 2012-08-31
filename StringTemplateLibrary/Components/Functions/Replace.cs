@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
 using Org.Reddragonit.Stringtemplate.Interfaces;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Functions
 {
@@ -44,16 +45,21 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             return true;
         }
 
-        public override string GenerateString(ref Dictionary<string, object> variables)
+        public override void Append(ref Dictionary<string, object> variables, Org.Reddragonit.Stringtemplate.Outputs.IOutputWriter writer)
         {
-            string tmp = _eval.GenerateString(ref variables);
-            string search = _search.GenerateString(ref variables);
-            string replace = _replace.GenerateString(ref variables);
+            StringOutputWriter swo = new StringOutputWriter();
+            _eval.Append(ref variables,swo);
+            string tmp = swo.ToString();
+            swo.Clear();
+            _search.Append(ref variables, swo);
+            string search = swo.ToString();
+            swo.Clear();
+            _replace.Append(ref variables, swo);
+            string replace = swo.ToString(); 
             if ((tmp != null)&&(search!=null)&&(replace!=null))
             {
-                return tmp.Replace(search, replace);
+                writer.Append(tmp.Replace(search, replace));
             }
-            return null;
         }
 
         public override IComponent NewInstance()

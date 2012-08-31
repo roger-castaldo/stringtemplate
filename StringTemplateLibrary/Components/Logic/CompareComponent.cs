@@ -14,6 +14,7 @@ using Org.Reddragonit.Stringtemplate.Interfaces;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
 using Org.Reddragonit.Stringtemplate.Components.Base;
 using System.Collections;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Logic
 {
@@ -131,12 +132,17 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 			}
 			return true;
 		}
-		
-		public string GenerateString(ref Dictionary<string, object> variables)
+
+        public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
 		{
 			string ret = "false";
-			string l = _left.GenerateString(ref variables);
-			string r = _right.GenerateString(ref variables);
+            StringOutputWriter swo = new StringOutputWriter();
+            _left.Append(ref variables, swo);
+            string l = swo.ToString();
+            swo.Clear();
+            _right.Append(ref variables, swo);
+            string r = swo.ToString();
+            swo.Clear();
 			switch (_type){
 				case CompareType.EQUAL:
 					ret = Utility.StringsEqual(l,r).ToString();
@@ -154,7 +160,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 					ret = (((l==null)&&(r==null))||((r!=null)&&((l==null)||l.CompareTo(r)<=0))).ToString();
 					break;
 				case CompareType.NOT_EQUAL:
-					ret = (!Utility.StringsEqual(_left.GenerateString(ref variables),_right.GenerateString(ref variables))).ToString();
+					ret = (!Utility.StringsEqual(l,r)).ToString();
 					break;
                 case CompareType.SIMILAR_TO:
                     ret = Utility.StringContainsString(l, r).ToString();
@@ -163,7 +169,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
                     ret = (!Utility.StringContainsString(l, r)).ToString();
                     break;
 			}
-			return ret;
+            writer.Append(ret);
 		}
 
         public IComponent NewInstance()

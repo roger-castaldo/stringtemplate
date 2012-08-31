@@ -29,12 +29,12 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             return true;
         }
 
-        public override string GenerateString(ref Dictionary<string, object> variables)
+        public override void Append(ref Dictionary<string, object> variables, Org.Reddragonit.Stringtemplate.Outputs.IOutputWriter writer)
         {
             object obj = Utility.LocateObjectInVariables(val, variables);
             if (obj == null)
                 throw new Exception("Unable to locate a variable of the name " + val + " in order to extract the type name");
-            return obj.GetType().FullName;
+            writer.Append(obj.GetType().FullName);
         }
 
         public override Org.Reddragonit.Stringtemplate.Interfaces.IComponent NewInstance()

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
 using System.Text.RegularExpressions;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Base
 {
@@ -45,22 +46,20 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
 			_val = (Values)Enum.Parse(typeof(Values),t.Content);
 			return true;
 		}
-		
-		public string GenerateString(ref Dictionary<string, object> variables)
+
+        public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
 		{
-			string ret="";
 			switch(_val){
 				case Values.NEW_LINE:
-					ret = "\n";
+					writer.Append("\n");
 					break;
 				case Values.TAB:
-					ret = "\t";
+					writer.Append("\t");
 					break;
 				case Values.SPACE:
-					ret = " ";
+					writer.Append(" ");
 					break;
 			}
-			return ret;
 		}
 		
 		public IComponent NewInstance()

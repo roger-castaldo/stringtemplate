@@ -4,6 +4,7 @@ using System.Text;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 using System.Text.RegularExpressions;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Base
 {
@@ -28,9 +29,9 @@ namespace Org.Reddragonit.Stringtemplate.Components.Base
             return true;
         }
 
-        public string GenerateString(ref Dictionary<string, object> variables)
+        public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
         {
-            return _val;
+            writer.Append(_val);
         }
 
         public IComponent NewInstance() {

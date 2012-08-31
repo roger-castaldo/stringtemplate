@@ -50,6 +50,9 @@
     <Compile Include="Components\Logic\IFComponent.cs" />
     <Compile Include="Interfaces\IComponent.cs" />
     <Compile Include="Interfaces\IParentComponent.cs" />
+    <Compile Include="Outputs\IOutputWriter.cs" />
+    <Compile Include="Outputs\StreamOutputWriter.cs" />
+    <Compile Include="Outputs\StringOutputWriter.cs" />
     <Compile Include="Template.cs" />
     <Compile Include="TemplateGroup.cs" />
     <Compile Include="Tokenizers\Tokenizer.cs" />

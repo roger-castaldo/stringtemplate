@@ -10,6 +10,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Interfaces
 {
@@ -20,7 +21,7 @@ namespace Org.Reddragonit.Stringtemplate.Interfaces
 	{	
 		bool CanLoad(Tokenizers.Token token);
         bool Load(Queue<Tokenizers.Token> tokens, Type tokenizerType,TemplateGroup group);
-		string GenerateString(ref Dictionary<string, object> variables);
+		void Append(ref Dictionary<string, object> variables,IOutputWriter writer);
         IComponent NewInstance();
 	}
 }

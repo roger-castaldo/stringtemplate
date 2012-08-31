@@ -4,6 +4,7 @@ using System.Text;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 using System.Text.RegularExpressions;
 using Org.Reddragonit.Stringtemplate.Tokenizers;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 
 namespace Org.Reddragonit.Stringtemplate.Components.Logic
@@ -90,21 +91,20 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
             return true;
         }
 
-        public string GenerateString(ref Dictionary<string, object> variables)
+        public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
         {
+            StringOutputWriter swo = new StringOutputWriter();
             foreach (IfStatement state in _statements)
             {
-                if (Utility.IsComponentTrue(state.Condition.GenerateString(ref variables)))
+                swo.Clear();
+                state.Condition.Append(ref variables, swo);
+                if (Utility.IsComponentTrue(swo.ToString()))
                 {
-                    string ret = "";
                     foreach (IComponent child in state.Children)
-                    {
-                        ret += child.GenerateString(ref variables);
-                    }
-                    return ret;
+                        child.Append(ref variables, writer);
+                    break;
                 }
             }
-            return "";
         }
 
         public IComponent NewInstance() {

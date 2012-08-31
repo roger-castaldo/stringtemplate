@@ -6,6 +6,7 @@ using Org.Reddragonit.Stringtemplate.Tokenizers;
 using Org.Reddragonit.Stringtemplate.Interfaces;
 
 using System.Collections;
+using Org.Reddragonit.Stringtemplate.Outputs;
 
 namespace Org.Reddragonit.Stringtemplate.Components.Functions
 {
@@ -89,7 +90,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             return true;
         }
 
-        public override string GenerateString(ref Dictionary<string, object> variables)
+        public override void  Append(ref Dictionary<string,object> variables, IOutputWriter writer)
         {
             if (variables.ContainsKey(_entryName))
                 throw new Exception("Unable to process foreach loop because variable name " + _entryName + " already in use");
@@ -97,7 +98,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             int i = 0;
             object obj = Utility.LocateObjectInVariables(_variableName, variables);
             if (obj == null)
-                return "";
+                return;
             if (!(obj is ArrayList) && !(obj.GetType().IsArray) && !(obj is IEnumerable) &&!(obj is IDictionary))
                 throw new Exception("Unable to process foreach loop because variable " + _variableName + " is not an iterable object");
             string ret = "";
@@ -112,7 +113,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
                     variables.Add("i", i);
                     foreach (IComponent comp in _children)
                     {
-                        ret += comp.GenerateString(ref variables);
+                        comp.Append(ref variables,writer);
                     }
                     i++;
                 }
@@ -128,7 +129,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
                     variables.Add("i", i);
                     foreach (IComponent comp in _children)
                     {
-                        ret += comp.GenerateString(ref variables);
+                        comp.Append(ref variables,writer);
                     }
                     i++;
                 }
@@ -143,7 +144,7 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
                     variables.Add("i", i);
                     foreach (IComponent comp in _children)
                     {
-                        ret += comp.GenerateString(ref variables);
+                        comp.Append(ref variables,writer);
                     }
                     i++;
                 }
@@ -152,8 +153,6 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             variables.Remove(_entryName);
             if (oldi != null)
                 variables.Add("i", oldi);
-            return ret;
-
         }
 
         public override IComponent NewInstance() {
