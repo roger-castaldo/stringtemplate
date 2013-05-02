@@ -36,12 +36,15 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
                 _format = _format.Substring(1);
             if (_format.EndsWith("\"") || _format.EndsWith("'"))
                 _format = _format.Substring(0, _format.Length - 1);
+            _variable = (_variable.StartsWith("$") && _variable.EndsWith("$") ? _variable.Substring(1, _variable.Length - 2) : _variable);
+            _format = (_format.StartsWith("$") && _format.EndsWith("$") ? _format.Substring(1, _format.Length - 2) : _format);
             return true;
         }
 
         public override void  Append(ref Dictionary<string,object> variables, Org.Reddragonit.Stringtemplate.Outputs.IOutputWriter writer)
         {
             object obj = Utility.LocateObjectInVariables(_variable, variables);
+            _format = (Utility.LocateObjectInVariables(_format, variables) != null ? Utility.LocateObjectInVariables(_format, variables) : _format).ToString();
             if (obj != null)
                 writer.Append(((IFormattable)Utility.LocateObjectInVariables(_variable, variables)).ToString(_format, null));
         }
