@@ -43,6 +43,7 @@
     <Compile Include="Components\Functions\Even.cs" />
     <Compile Include="Components\Functions\ForEachComponent.cs" />
     <Compile Include="Components\Functions\Format.cs" />
+    <Compile Include="Components\Functions\Len.cs" />
     <Compile Include="Components\Functions\Odd.cs" />
     <Compile Include="Components\Functions\Replace.cs" />
     <Compile Include="Components\Functions\TypeName.cs" />
