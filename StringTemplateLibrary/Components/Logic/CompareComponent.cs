@@ -46,6 +46,8 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 		
 		private static readonly Regex regSimpleStyle = new Regex("^\\((.+)\\s+(([E|e][Q|q])|([N|n][E|e])|([G|g][T|t])|([L|l][T|t])|([G|g][E|e])|([L|l][E|e])|([S|s][T|t])|([N|n][S|s]))\\s+(.+)\\)$",
 		                                                        RegexOptions.Compiled|RegexOptions.ECMAScript);
+
+        private static readonly Regex _regNumber = new Regex("^\\d+(\\.\\d+)?$", RegexOptions.Compiled | RegexOptions.ECMAScript);
 		
 		private CompareType _type = CompareType.EQUAL;
 		private IComponent _left;
@@ -134,8 +136,8 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
 		}
 
         public void Append(ref Dictionary<string, object> variables, IOutputWriter writer)
-		{
-			string ret = "false";
+        {
+            string ret = "false";
             StringOutputWriter swo = new StringOutputWriter();
             _left.Append(ref variables, swo);
             string l = swo.ToString();
@@ -143,34 +145,50 @@ namespace Org.Reddragonit.Stringtemplate.Components.Logic
             _right.Append(ref variables, swo);
             string r = swo.ToString();
             swo.Clear();
-			switch (_type){
-				case CompareType.EQUAL:
-					ret = Utility.StringsEqual(l,r).ToString();
-					break;
-				case CompareType.GREATER_THAN:
-					ret = ((l!=null)&&((r==null)||(l.CompareTo(r)>0))).ToString();
-					break;
-				case CompareType.GREATER_THAN_OR_EQUAL_TO:
-					ret = (((l==null)&&(r==null))||((l!=null)&&((r==null)||(l.CompareTo(r)>=0)))).ToString();
-					break;
-				case CompareType.LESS_THAN:
-					ret = ((r!=null)&&((l==null)||l.CompareTo(r)<0)).ToString();
-					break;
-				case CompareType.LESS_THAN_OR_EQUAL_TO:
-					ret = (((l==null)&&(r==null))||((r!=null)&&((l==null)||l.CompareTo(r)<=0))).ToString();
-					break;
-				case CompareType.NOT_EQUAL:
-					ret = (!Utility.StringsEqual(l,r)).ToString();
-					break;
+            switch (_type)
+            {
+                case CompareType.EQUAL:
+                    ret = Utility.StringsEqual(l, r).ToString();
+                    break;
+                case CompareType.GREATER_THAN:
+                    if (_regNumber.IsMatch(l) && _regNumber.IsMatch(r))
+                        ret = (decimal.Parse(l) > decimal.Parse(r)).ToString();
+                    else
+                        ret = ((l != null) && ((r == null) || (l.CompareTo(r) > 0))).ToString();
+                    break;
+                case CompareType.GREATER_THAN_OR_EQUAL_TO:
+                    if (_regNumber.IsMatch(l) && _regNumber.IsMatch(r))
+                        ret = (decimal.Parse(l) >= decimal.Parse(r)).ToString();
+                    else
+                        ret = (((l == null) && (r == null)) || ((l != null) && ((r == null) || (l.CompareTo(r) >= 0)))).ToString();
+                    break;
+                case CompareType.LESS_THAN:
+                    if (_regNumber.IsMatch(l) && _regNumber.IsMatch(r))
+                        ret = (decimal.Parse(l) < decimal.Parse(r)).ToString();
+                    else
+                        ret = ((r != null) && ((l == null) || l.CompareTo(r) < 0)).ToString();
+                    break;
+                case CompareType.LESS_THAN_OR_EQUAL_TO:
+                    if (_regNumber.IsMatch(l) && _regNumber.IsMatch(r))
+                        ret = (decimal.Parse(l) <= decimal.Parse(r)).ToString();
+                    else
+                        ret = (((l == null) && (r == null)) || ((r != null) && ((l == null) || l.CompareTo(r) <= 0))).ToString();
+                    break;
+                case CompareType.NOT_EQUAL:
+                    if (_regNumber.IsMatch(l) && _regNumber.IsMatch(r))
+                        ret = (decimal.Parse(l) != decimal.Parse(r)).ToString();
+                    else
+                        ret = (!Utility.StringsEqual(l, r)).ToString();
+                    break;
                 case CompareType.SIMILAR_TO:
                     ret = Utility.StringContainsString(l, r).ToString();
                     break;
                 case CompareType.NOT_SIMILAR_TO:
                     ret = (!Utility.StringContainsString(l, r)).ToString();
                     break;
-			}
+            }
             writer.Append(ret);
-		}
+        }
 
         public IComponent NewInstance()
         {
