@@ -36,12 +36,11 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
 
         public override void Append(ref Dictionary<string, object> variables, IOutputWriter writer){
             StringOutputWriter swo = new StringOutputWriter();
+            Decimal? d = null;
             try
             {
                 _val.Append(ref variables, swo);
-                Decimal d = Decimal.Parse(swo.ToString());
-                if (d % 2 == 0)
-                    writer.Append(false.ToString());
+                d = Decimal.Parse(swo.ToString());
             }
             catch (Exception e)
             {
@@ -54,21 +53,23 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
                     {
                         try
                         {
-                            decimal d = Decimal.Parse(str);
-                            if (d % 2 == 0)
-                                writer.Append(false.ToString());
+                            d = Decimal.Parse(str);
                         }
                         catch (Exception ex)
                         {
-                            writer.Append(false.ToString());
+                            d = null;
                         }
                     }
-                    else
-                        writer.Append(false.ToString());
-                }else
-                    writer.Append(false.ToString());
+                }
             }
-            writer.Append(true.ToString());
+            if (d.HasValue)
+            {
+                if (d.Value % 2 == 0)
+                    writer.Append(false.ToString());
+                else
+                    writer.Append(true.ToString());
+            }else
+                writer.Append(false.ToString());
         }
 
         public override IComponent NewInstance()
