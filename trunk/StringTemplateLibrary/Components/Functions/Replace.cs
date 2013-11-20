@@ -55,9 +55,17 @@ namespace Org.Reddragonit.Stringtemplate.Components.Functions
             string search = swo.ToString();
             swo.Clear();
             _replace.Append(ref variables, swo);
-            string replace = swo.ToString(); 
+            string replace = swo.ToString();
             if ((tmp != null)&&(search!=null)&&(replace!=null))
             {
+                if (search.StartsWith("\"") && search.EndsWith("\""))
+                    search = search.Substring(1, search.Length - 2);
+                else if (search.StartsWith("'") && search.EndsWith("'"))
+                    search = search.Substring(1, search.Length - 2);
+                if (replace.StartsWith("\"") && replace.EndsWith("\""))
+                    replace = replace.Substring(1, replace.Length - 2);
+                else if (replace.StartsWith("'") && replace.EndsWith("'"))
+                    replace = replace.Substring(1, replace.Length - 2);
                 writer.Append(tmp.Replace(search, replace));
             }
         }
