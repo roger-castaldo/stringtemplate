@@ -1,0 +1,1 @@
+A new implementation of the string template engine through antlr that was originally implemented in java, translated to .Net.  This version goes into a different direction to attempt to be more efficient, using a much smaller code base that can easily be expanded to add new functionality to it as desired by users of it.
