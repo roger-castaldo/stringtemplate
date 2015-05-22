@@ -14,6 +14,11 @@ namespace Org.Reddragonit.Stringtemplate.Components
         protected abstract string[] FunctionParameters { get; }
         protected List<IComponent> _children;
 
+        protected object _LocateObjectInVariables(string variableName, Dictionary<string, object> variables)
+        {
+            return Utility.LocateObjectInVariables(variableName, variables);
+        }
+
         private Regex regBaseFunctionCall;
         private Regex regComplexFunctionCall;
         private Regex regAttachedVarCall;
