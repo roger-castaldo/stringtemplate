@@ -90,6 +90,19 @@ namespace Org.Reddragonit.Stringtemplate
             _templateGroup = templateGroup;
         }
 
+        private Template() { }
+
+        public Template Clone()
+        {
+            Template ret = new Template();
+            ret._templateCode = _templateCode;
+            ret._tokenizer = _tokenizer;
+            ret._parameters = new Dictionary<string, object>();
+            ret._templateGroup = _templateGroup;
+            ret._tokenized = _tokenized;
+            return ret;
+        }
+
         public void SetParameter(string name, object value)
         {
             if (_parameters.ContainsKey(name))
