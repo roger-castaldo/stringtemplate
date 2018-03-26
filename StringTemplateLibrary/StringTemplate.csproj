@@ -1,69 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <ProjectGuid>{826664B6-1904-49B8-91AE-2C5ECAA907CD}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Library</OutputType>
+    <TargetFrameworks>netstandard2.0;net452;net20</TargetFrameworks>
     <RootNamespace>Org.Reddragonit.Stringtemplate</RootNamespace>
-    <AssemblyName>StringTemplate</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
+    <PackageId>Org.Reddragonit.Stringtemplate</PackageId>
+    <Authors>Roger Castaldo</Authors>
+    <Company />
+    <Description>A rewrite of the Antlr Stringtemplate engine that uses no external libraries as well as has the abaility to be expanded with your own implemented IOutputWriter for cutom output types as well as IComponent for parsing custom tokens.</Description>
+    <PackageProjectUrl>https://github.com/roger-castaldo/stringtemplate</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/roger-castaldo/stringtemplate</RepositoryUrl>
+    <PackageTags>stringtemplate template templateengine</PackageTags>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+    <Summary>A rewrite of the Antlr Stringtemplate engine that uses no external libraries as well as has the abaility to be expanded with your own implemented IOutputWriter for cutom output types as well as IComponent for parsing custom tokens.</Summary>
+    <Title>StringTemplate</Title>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Components\Base\GenericComponent.cs" />
-    <Compile Include="Components\Base\ParameterComponent.cs" />
-    <Compile Include="Components\Base\QuotedStringComponent.cs" />
-    <Compile Include="Components\Base\SpecialCharacterComponent.cs" />
-    <Compile Include="Components\Base\SubTemplateComponent.cs" />
-    <Compile Include="Components\Base\VariableComponent.cs" />
-    <Compile Include="Components\ComponentExtractor.cs" />
-    <Compile Include="Components\FunctionComponent.cs" />
-    <Compile Include="Components\Functions\Even.cs" />
-    <Compile Include="Components\Functions\ForEachComponent.cs" />
-    <Compile Include="Components\Functions\Format.cs" />
-    <Compile Include="Components\Functions\Len.cs" />
-    <Compile Include="Components\Functions\Odd.cs" />
-    <Compile Include="Components\Functions\Replace.cs" />
-    <Compile Include="Components\Functions\TypeName.cs" />
-    <Compile Include="Components\Logic\CompareComponent.cs" />
-    <Compile Include="Components\Logic\IFComponent.cs" />
-    <Compile Include="Interfaces\IComponent.cs" />
-    <Compile Include="Interfaces\IParentComponent.cs" />
-    <Compile Include="Outputs\IOutputWriter.cs" />
-    <Compile Include="Outputs\StreamOutputWriter.cs" />
-    <Compile Include="Outputs\StringOutputWriter.cs" />
-    <Compile Include="Template.cs" />
-    <Compile Include="TemplateGroup.cs" />
-    <Compile Include="Tokenizers\Tokenizer.cs" />
-    <Compile Include="Tokenizers\DefaultTokenizer.cs" />
-    <Compile Include="Utility.cs" />
-  </ItemGroup>
+
 </Project>
