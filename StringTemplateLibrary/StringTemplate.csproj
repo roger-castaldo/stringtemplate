@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net452;net20</TargetFrameworks>
+    <TargetFrameworks>net452;netcoreapp3.1;</TargetFrameworks>
     <RootNamespace>Org.Reddragonit.Stringtemplate</RootNamespace>
     <PackageId>Org.Reddragonit.Stringtemplate</PackageId>
     <Authors>Roger Castaldo</Authors>
